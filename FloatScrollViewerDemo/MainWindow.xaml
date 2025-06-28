@@ -1,0 +1,352 @@
+﻿<Window x:Class="FloatScrollViewerDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FloatScrollViewerDemo"
+        mc:Ignorable="d"
+        Title="FloatScrollViewerDemo" Height="450" Width="800">
+    <Window.Resources>
+        <SolidColorBrush x:Key="DefaultBrush" Color="#cdcdcd"/>
+        <SolidColorBrush x:Key="MouseOverBrush" Color="#9a9a9a"/>
+        <Style x:Key="LineUpRepeatButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Grid Height="16">
+                            <Border Background="White" Opacity="0.01"/>
+                            <Path x:Name="ButtonPath" Data="M50,0 0,100 100,100z" Fill="{StaticResource DefaultBrush}" Width="10" Height="8" Stretch="Fill" HorizontalAlignment="Right" Margin="0,0,2,0"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Fill" Value="{StaticResource MouseOverBrush}" TargetName="ButtonPath"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="LineDownRepeatButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Grid Height="16">
+                            <Border Background="White" Opacity="0.01"/>
+                            <Path x:Name="ButtonPath" Data="M0,0 100,0 50,100z" Fill="{StaticResource DefaultBrush}" Width="10" Height="8" Stretch="Fill" HorizontalAlignment="Right" Margin="0,0,2,0"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Fill" Value="{StaticResource MouseOverBrush}" TargetName="ButtonPath"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="LineLeftRepeatButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Grid Width="16">
+                            <Border Background="White" Opacity="0.01"/>
+                            <Path x:Name="ButtonPath" Data="M0,50 100,0 100,100z" Fill="{StaticResource DefaultBrush}" Width="8" Height="10" Stretch="Fill" VerticalAlignment="Bottom" Margin="0,0,0,2"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Fill" Value="{StaticResource MouseOverBrush}" TargetName="ButtonPath"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="LineRightRepeatButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Grid Width="16">
+                            <Border Background="White" Opacity="0.01"/>
+                            <Path x:Name="ButtonPath" Data="M0,0 0,100 100,50z" Fill="{StaticResource DefaultBrush}" Width="8" Height="10" Stretch="Fill" VerticalAlignment="Bottom" Margin="0,0,0,2"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Fill" Value="{StaticResource MouseOverBrush}" TargetName="ButtonPath"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="PageRepeatButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Border Background="White" Opacity="0.01"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="FloatScrollViewer" TargetType="ScrollViewer">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollViewer">
+                        <Grid>
+                            <ScrollContentPresenter/>
+                            <ScrollBar x:Name="PART_HorizontalScrollBar" Orientation="Horizontal" VerticalAlignment="Bottom"
+                                       Value="{TemplateBinding HorizontalOffset}"
+                                       Maximum="{TemplateBinding ScrollableWidth}"
+                                       ViewportSize="{TemplateBinding ViewportWidth}"
+                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}">
+                                <ScrollBar.Template>
+                                    <ControlTemplate TargetType="ScrollBar">
+                                        <Grid>
+                                            <Border x:Name="HorizontalBorder" Background="#f0f0f0" Opacity="0" Height="14" VerticalAlignment="Bottom"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <RepeatButton x:Name="LineLeftButton" Grid.Row="0" Command="ScrollBar.LineLeftCommand" Style="{StaticResource LineLeftRepeatButton}" Opacity="0"/>
+                                                <Track Grid.Column="1" x:Name="PART_Track" Height="6" Margin="0,0,0,1" Orientation="Horizontal" VerticalAlignment="Bottom" IsDirectionReversed="False">
+                                                    <Track.DecreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.PageLeftCommand" Style="{StaticResource PageRepeatButton}"/>
+                                                    </Track.DecreaseRepeatButton>
+                                                    <Track.Thumb>
+                                                        <Thumb>
+                                                            <Thumb.Template>
+                                                                <ControlTemplate TargetType="Thumb">
+                                                                    <Border x:Name="ThumbBorder" Background="{StaticResource DefaultBrush}" CornerRadius="4"/>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="{StaticResource MouseOverBrush}" TargetName="ThumbBorder"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Thumb.Template>
+                                                        </Thumb>
+                                                    </Track.Thumb>
+                                                    <Track.IncreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.PageRightCommand" Style="{StaticResource PageRepeatButton}"/>
+                                                    </Track.IncreaseRepeatButton>
+                                                </Track>
+                                                <RepeatButton x:Name="LineRightButton" Grid.Column="2" Command="ScrollBar.LineRightCommand" Style="{StaticResource LineRightRepeatButton}" Opacity="0"/>
+                                            </Grid>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Panel.ZIndex" Value="1"/>
+                                                <Trigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="PART_Track"
+                                                            Storyboard.TargetProperty="Height"
+                                                            To="12"
+                                                            Duration="0:0:0.1"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="HorizontalBorder"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="0.9"
+                                                            Duration="0:0:0.1"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="LineLeftButton"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="1"
+                                                            Duration="0:0:0.1"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="LineRightButton"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="1"
+                                                            Duration="0:0:0.1"
+                                                            AccelerationRatio="0.3"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.EnterActions>
+                                                <Trigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="PART_Track"
+                                                            Storyboard.TargetProperty="Height"
+                                                            To="6"
+                                                            Duration="0:0:0.3"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="HorizontalBorder"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="0"
+                                                            Duration="0:0:0.4"
+                                                            AccelerationRatio="1"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="LineLeftButton"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="0"
+                                                            Duration="0:0:0.3"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="LineRightButton"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="0"
+                                                            Duration="0:0:0.3"
+                                                            AccelerationRatio="0.3"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.ExitActions>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ScrollBar.Template>
+                            </ScrollBar>
+                            <ScrollBar x:Name="PART_VerticalScrollBar" Orientation="Vertical" HorizontalAlignment="Right"
+                                       Value="{TemplateBinding VerticalOffset}"
+                                       Maximum="{TemplateBinding ScrollableHeight}"
+                                       ViewportSize="{TemplateBinding ViewportHeight}"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}">
+                                <ScrollBar.Template>
+                                    <ControlTemplate TargetType="ScrollBar">
+                                        <Grid>
+                                            <Border x:Name="VerticalBorder" Background="#f0f0f0" Opacity="0" Width="14" HorizontalAlignment="Right"/>
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                    <RowDefinition Height="auto"/>
+                                                </Grid.RowDefinitions>
+                                                <RepeatButton x:Name="LineUpButton" Grid.Row="0" Command="ScrollBar.LineUpCommand" Style="{StaticResource LineUpRepeatButton}" Opacity="0"/>
+                                                <Track Grid.Row="1" x:Name="PART_Track" Width="6" Margin="0,0,1,0" Orientation="Vertical" HorizontalAlignment="Right" IsDirectionReversed="True">
+                                                    <Track.DecreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.PageUpCommand" Style="{StaticResource PageRepeatButton}"/>
+                                                    </Track.DecreaseRepeatButton>
+                                                    <Track.Thumb>
+                                                        <Thumb>
+                                                            <Thumb.Template>
+                                                                <ControlTemplate TargetType="Thumb">
+                                                                    <Border x:Name="ThumbBorder" Background="{StaticResource DefaultBrush}" CornerRadius="4"/>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="{StaticResource MouseOverBrush}" TargetName="ThumbBorder"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Thumb.Template>
+                                                        </Thumb>
+                                                    </Track.Thumb>
+                                                    <Track.IncreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.PageDownCommand" Style="{StaticResource PageRepeatButton}"/>
+                                                    </Track.IncreaseRepeatButton>
+                                                </Track>
+                                                <RepeatButton x:Name="LineDownButton" Grid.Row="2" Command="ScrollBar.LineDownCommand" Style="{StaticResource LineDownRepeatButton}" Opacity="0"/>
+                                            </Grid>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Panel.ZIndex" Value="1"/>
+                                                <Trigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="PART_Track"
+                                                            Storyboard.TargetProperty="Width"
+                                                            To="12"
+                                                            Duration="0:0:0.1"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="VerticalBorder"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="0.9"
+                                                            Duration="0:0:0.1"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="LineUpButton"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="1"
+                                                            Duration="0:0:0.1"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="LineDownButton"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="1"
+                                                            Duration="0:0:0.1"
+                                                            AccelerationRatio="0.3"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.EnterActions>
+                                                <Trigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="PART_Track"
+                                                            Storyboard.TargetProperty="Width"
+                                                            To="6"
+                                                            Duration="0:0:0.3"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="VerticalBorder"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="0"
+                                                            Duration="0:0:0.4"
+                                                            AccelerationRatio="1"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="LineUpButton"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="0"
+                                                            Duration="0:0:0.3"
+                                                            AccelerationRatio="0.3"/>
+                                                            <DoubleAnimation
+                                                            Storyboard.TargetName="LineDownButton"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            To="0"
+                                                            Duration="0:0:0.3"
+                                                            AccelerationRatio="0.3"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.ExitActions>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ScrollBar.Template>
+                            </ScrollBar>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="100">
+        <ScrollViewer Style="{DynamicResource FloatScrollViewer}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <UniformGrid Width="800" Height="800">
+                <Border Width="200" Height="200" Background="AliceBlue"/>
+                <Border Width="200" Height="200" Background="AntiqueWhite"/>
+                <Border Width="200" Height="200" Background="Aqua"/>
+                <Border Width="200" Height="200" Background="Aquamarine"/>
+                <Border Width="200" Height="200" Background="Azure"/>
+                <Border Width="200" Height="200" Background="Black"/>
+                <Border Width="200" Height="200" Background="BurlyWood"/>
+                <Border Width="200" Height="200" Background="MediumSpringGreen"/>
+            </UniformGrid>
+        </ScrollViewer>
+    </Grid>
+</Window>
